@@ -1,23 +1,24 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
+  console.log("Starting browser...");
+
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: false,  // we keep it visible in cloud for stability
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
   const page = await browser.newPage();
-  await page.goto('https://www.z2u.com/', { waitUntil: 'networkidle2' });
 
-  console.log("🟢 Z2U opened. Please login manually (wait 3 mins)...");
+  // Load Z2U homepage (change to your dashboard if needed)
+  await page.goto('https://www.z2u.com', { waitUntil: 'networkidle2' });
 
-  // Wait 3 minutes so you can manually login
-  await page.waitForTimeout(3 * 60 * 1000);
+  console.log("Z2U loaded. Keeping session alive...");
 
-  // Keep refreshing every 5 minutes to stay online
+  // Refresh every 5 minutes to keep session active
   setInterval(async () => {
-    console.log("🔄 Refreshing to stay online...");
     await page.reload({ waitUntil: 'networkidle2' });
+    console.log("Refreshed at " + new Date().toLocaleTimeString());
   }, 5 * 60 * 1000);
-})();
 
+})();
