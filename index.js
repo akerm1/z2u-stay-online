@@ -1,29 +1,24 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 (async () => {
-  console.log("Starting browser...");
+    const browser = await puppeteer.launch({
+        headless: false, // run with browser visible
+        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // your Chrome path
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
 
-  const browser = await puppeteer.launch({
-    headless: "new",  // Must be headless for cloud servers
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--no-zygote',
-      '--single-process'
-    ]
-  });
+    const page = await browser.newPage();
 
-  const page = await browser.newPage();
+    // Load cookies
+    const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+    await page.setCookie(...cookies);
 
-  await page.goto('https://www.z2u.com', { waitUntil: 'networkidle2' });
+    // Go to Z2U logged in
+    await page.goto('https://www.z2u.com', { waitUntil: 'networkidle2' });
 
-  console.log("Z2U loaded. Keeping session alive...");
+    console.log("✅ Logged in using saved cookies");
 
-  setInterval(async () => {
-    await page.reload({ waitUntil: 'networkidle2' });
-    console.log("Refreshed at " + new Date().toLocaleTimeString());
-  }, 5 * 60 * 1000);
-
+    // Keep running
+    await new Promise(() => {}); // Keeps the browser open forever
 })();
