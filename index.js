@@ -21,4 +21,9 @@ const fs = require('fs');
 
     // Keep running
     await new Promise(() => {}); // Keeps the browser open forever
+    console.log("✅ Logged in using saved cookies");
+// Keep alive forever
+await new Promise(() => {});
+
 })();
+
